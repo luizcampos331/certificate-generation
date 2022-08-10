@@ -3,7 +3,7 @@ import type { AWS } from '@serverless/typescript';
 const serverlessConfiguration: AWS = {
   service: 'certificate-generation',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild'],
+  plugins: ['serverless-esbuild', 'serverless-offline'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -31,6 +31,32 @@ const serverlessConfiguration: AWS = {
       concurrency: 10,
     },
   },
+  resources: {
+    Resources: {
+      dbCertificateUsers: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          TableName: "users_certificate",
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+          AttributeDefinitions: [
+            {
+              AttributeName: "id",
+              AttributeType: "S"
+            }
+          ],
+          KeySchema: [
+            {
+              AttributeName: "id",
+              KeyType: "HASH"
+            }
+          ]
+        }
+      }
+    }
+  }
 };
 
 module.exports = serverlessConfiguration;
